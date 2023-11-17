@@ -2,6 +2,8 @@
 
 SHELL = /bin/bash
 
+CC = gcc
+
 GSTFLAGS += -g $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-audio-1.0`)
 
 G5FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-video-1.0 gtk+-3.0`)
@@ -25,13 +27,13 @@ playback: $(shell \
     done;)
 
 basic-tutorial-5: basic-tutorial-5.c
-	gcc -o$@ $< $(G5FLAGS)
+	$(CC) -o$@ $< $(G5FLAGS)
 
 basic-tutorial-9: basic-tutorial-9.c
-	gcc -o$@ $< $(G9FLAGS)
+	$(CC) -o$@ $< $(G9FLAGS)
 
 basic-tutorial-15: basic-tutorial-15.c
-	gcc -o$@ $< -I/usr/include/clutter-1.0 \
+	$(CC) -o$@ $< -I/usr/include/clutter-1.0 \
         -I/usr/include/clutter-gst-3.0\
 		-I/usr/include/cairo\
         -I/usr/include/cogl\
@@ -41,15 +43,15 @@ basic-tutorial-15: basic-tutorial-15.c
         -I/usr/include/pango-1.0 -lclutter-1.0 -lclutter-gst-3.0 $(GSTFLAGS)
 
 basic-tutorial-%: basic-tutorial-%.c
-	gcc -o$@ $< $(GSTFLAGS)
+	$(CC) -o$@ $< $(GSTFLAGS)
 
 playback-tutorial-%: playback-tutorial-%.c
-	gcc -o$@ $< $(GSTFLAGS)
+	$(CC) -o$@ $< $(GSTFLAGS)
 
 ex: exercise-2
 
 exercise-%: exercise-%.c
-	gcc -o$@ $< $(GSTFLAGS)
+	$(CC) -o$@ $< $(GSTFLAGS)
 	
 clean: 
 	@echo cleaning...
