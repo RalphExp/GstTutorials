@@ -11,16 +11,16 @@ G9FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbuti
 all: basic playback
 
 basic: $(shell \
-	for i in  1 2 3 4 5 6 7 8 9 12 13; \
+    for i in  1 2 3 4 5 6 7 8 9 12 13; \
     do\
         echo basic-tutorial-$$i;\
     done;)
 
 playback: $(shell \
-	for i in {1..7}; \
-	do\
-		echo playback-tutorial-$$i;\
-	done;)
+    for i in {1..7}; \
+    do\
+        echo playback-tutorial-$$i;\
+    done;)
 
 basic-tutorial-5: basic-tutorial-5.c
 	gcc -o$@ $< $(G5FLAGS)
