@@ -16,6 +16,12 @@ basic: $(shell \
         echo basic-tutorial-$$i;\
     done;)
 
+playback: $(shell \
+	for i in {1..7}; \
+	do\
+		echo playback-tutorial-$$i;\
+	done;)
+
 basic-tutorial-5: basic-tutorial-5.c
 	gcc -o$@ $< $(G5FLAGS)
 
@@ -24,8 +30,6 @@ basic-tutorial-9: basic-tutorial-9.c
 
 basic-tutorial-%: basic-tutorial-%.c
 	gcc -o$@ $< $(GSTFLAGS)
-
-playback: $(shell for i in {1..7}; do echo playback-tutorial-$$i; done;)
 
 playback-tutorial-%: playback-tutorial-%.c
 	gcc -o$@ $< $(GSTFLAGS)
