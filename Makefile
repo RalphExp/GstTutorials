@@ -11,9 +11,11 @@ G9FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbuti
 all: basic playback
 
 basic: $(shell \
-    for i in  1 2 3 4 5 6 7 8 9 12 13; \
+    for i in {1..15}; \
     do\
-        echo basic-tutorial-$$i;\
+	    if [ -e "basic-tutorial-$$i.c" ]; then\
+            echo basic-tutorial-$$i;\
+		fi\
     done;)
 
 playback: $(shell \
@@ -27,6 +29,16 @@ basic-tutorial-5: basic-tutorial-5.c
 
 basic-tutorial-9: basic-tutorial-9.c
 	gcc -o$@ $< $(G9FLAGS)
+
+basic-tutorial-15: basic-tutorial-15.c
+	gcc -o$@ $< -I/usr/include/clutter-1.0 \
+        -I/usr/include/clutter-gst-3.0\
+		-I/usr/include/cairo\
+        -I/usr/include/cogl\
+		-I/usr/include/atk-1.0\
+		-I/usr/include/json-glib-1.0\
+		-I/usr/include/gdk-pixbuf-2.0\
+        -I/usr/include/pango-1.0 -lclutter-1.0 -lclutter-gst-3.0 $(GSTFLAGS)
 
 basic-tutorial-%: basic-tutorial-%.c
 	gcc -o$@ $< $(GSTFLAGS)
