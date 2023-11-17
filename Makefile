@@ -10,6 +10,8 @@ G5FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-video
 
 G9FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbutils-1.0`)
 
+G15FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 clutter-1.0 clutter-gst-3.0`)
+
 all: basic playback
 
 basic: $(shell \
@@ -33,14 +35,7 @@ basic-tutorial-9: basic-tutorial-9.c
 	$(CC) -o$@ $< $(G9FLAGS)
 
 basic-tutorial-15: basic-tutorial-15.c
-	$(CC) -o$@ $< -I/usr/include/clutter-1.0 \
-        -I/usr/include/clutter-gst-3.0\
-		-I/usr/include/cairo\
-        -I/usr/include/cogl\
-		-I/usr/include/atk-1.0\
-		-I/usr/include/json-glib-1.0\
-		-I/usr/include/gdk-pixbuf-2.0\
-        -I/usr/include/pango-1.0 -lclutter-1.0 -lclutter-gst-3.0 $(GSTFLAGS)
+	$(CC) -o$@ $< $(G15FLAGS)
 
 basic-tutorial-%: basic-tutorial-%.c
 	$(CC) -o$@ $< $(GSTFLAGS)
