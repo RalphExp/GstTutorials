@@ -16,5 +16,14 @@ basic-tutorial-5: basic-tutorial-5.c
 basic-tutorial-%: basic-tutorial-%.c
 	gcc -o$@ $< $(GSTFLAGS)
 
+ex: exercise-2
+
+exercise-%: exercise-%.c
+	gcc -o$@ $< $(GSTFLAGS)
+	
 clean: 
+	@echo cleaning...
 	@for i in {1..15}; do rm -rf basic-tutorial-$$i; done;
+	@rm -rf exercise-2;
+	@echo done
+
