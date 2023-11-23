@@ -1,7 +1,6 @@
 #include <gst/gst.h>
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   GstElement *pipeline, *source, *filter, *sink;
   GstBus *bus;
