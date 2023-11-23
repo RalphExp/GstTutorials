@@ -12,7 +12,7 @@ G9FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbuti
 
 G15FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 clutter-1.0 clutter-gst-3.0`)
 
-all: basic playback ex
+all: basic playback
 
 basic: $(shell \
     for i in {1..15}; \
