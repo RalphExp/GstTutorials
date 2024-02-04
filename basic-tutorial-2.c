@@ -1,3 +1,7 @@
+/* Command Line:
+ *   gst-launch-1.0 videotestsrc ! autovideosink;
+ */
+
 #include <gst/gst.h>
 
 int
