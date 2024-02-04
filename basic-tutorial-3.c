@@ -1,3 +1,9 @@
+/* Command Line:
+ *  gst-launch-1.0 uridecodebin \
+        uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm\
+         ! audioconvert ! audioresample ! autoaudiosink
+ */
+
 #include <gst/gst.h>
 
 /* Structure to contain all our information, so we can pass it to callbacks */
@@ -30,6 +36,10 @@ main (int argc, char *argv[])
   data.source = gst_element_factory_make ("uridecodebin", "source");
   data.convert = gst_element_factory_make ("audioconvert", "convert");
   data.resample = gst_element_factory_make ("audioresample", "resample");
+
+  /* The autoaudiosink is the equivalent of autovideosink seen in 
+   * the previous tutorial, for audio. It will render the audio stream 
+   * to the audio card.*/
   data.sink = gst_element_factory_make ("autoaudiosink", "sink");
 
   /* Create the empty pipeline */
@@ -52,11 +62,18 @@ main (int argc, char *argv[])
   }
 
   /* Set the URI to play */
+  /* Here we link the elements converter, resample and sink, but we DO NOT 
+   * link them with the source, since at this point it contains no source pads. 
+   * We just leave this branch (converter + sink) unlinked, until later on. */
   g_object_set (data.source, "uri",
       "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm",
       NULL);
 
   /* Connect to the pad-added signal */
+  /* The signals that a GstElement generates can be found in its documentation 
+   * or using the gst-inspect-1.0 tool as described in Basic tutorial 10: GStreamer tools.
+   *
+   * e.g. gst-inspect-1.0 uridecodebin /
   g_signal_connect (data.source, "pad-added", G_CALLBACK (pad_added_handler),
       &data);
 
@@ -125,6 +142,8 @@ main (int argc, char *argv[])
 static void
 pad_added_handler (GstElement * src, GstPad * new_pad, CustomData * data)
 {
+  /* src is uridecodebin in this example. */
+
   GstPad *sink_pad = gst_element_get_static_pad (data->convert, "sink");
   GstPadLinkReturn ret;
   GstCaps *new_pad_caps = NULL;
