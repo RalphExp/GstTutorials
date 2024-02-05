@@ -1,3 +1,11 @@
+/* Command Line:
+ *   gst-launch-1.0 audiotestsrc freq=215 ! tee name=t ! queue ! \
+        audioconvert ! audioresample ! autoaudiosink \
+    t. ! queue ! \
+        wavescope shader=0 style=1 ! videoconvert ! autovideosink
+ */
+
+
 #include <gst/gst.h>
 
 int
@@ -15,12 +23,18 @@ main (int argc, char *argv[])
   gst_init (&argc, &argv);
 
   /* Create the elements */
+  // src
   audio_source = gst_element_factory_make ("audiotestsrc", "audio_source");
+
+  // tee
   tee = gst_element_factory_make ("tee", "tee");
+
+  // 2 branches
   audio_queue = gst_element_factory_make ("queue", "audio_queue");
   audio_convert = gst_element_factory_make ("audioconvert", "audio_convert");
   audio_resample = gst_element_factory_make ("audioresample", "audio_resample");
   audio_sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+
   video_queue = gst_element_factory_make ("queue", "video_queue");
   visual = gst_element_factory_make ("wavescope", "visual");
   video_convert = gst_element_factory_make ("videoconvert", "video_convert");
