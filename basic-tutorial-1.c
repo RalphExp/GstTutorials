@@ -1,15 +1,11 @@
 #include <gst/gst.h>
-#include <gtk/gtk.h>
 
-int
-main (int argc, char *argv[])
+int real_main (int argc, char *argv[])
 {
   GstElement *pipeline;
   GstBus *bus;
   GstMessage *msg;
   GMainLoop *main_loop;
-
-  gtk_init (&argc, &argv);
 
   /* Initialize GStreamer */
   gst_init (&argc, &argv);
@@ -22,11 +18,6 @@ main (int argc, char *argv[])
 
   /* Start playing */
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
-
-  // main_loop = g_main_loop_new (NULL, FALSE);
-  // g_main_loop_run (main_loop);
-
-  gtk_main();
 
   /* Wait until error or EOS */
   bus = gst_element_get_bus (pipeline);
@@ -46,4 +37,12 @@ main (int argc, char *argv[])
   gst_element_set_state (pipeline, GST_STATE_NULL);
   gst_object_unref (pipeline);
   return 0;
+}
+
+int main(int argc, char *argv[]) {
+#if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
+  return gst_macos_main ((GstMainFunc) real_main, argc, argv, NULL);
+#else
+  return real_main (argc, argv);
+#endif
 }
