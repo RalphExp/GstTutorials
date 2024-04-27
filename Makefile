@@ -4,7 +4,7 @@ SHELL = /bin/bash
 
 CC = gcc
 
-GSTFLAGS += -g $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-audio-1.0`)
+GSTFLAGS += -g $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-video-1.0 gstreamer-audio-1.0 gtk+-3.0`)
 
 G5FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-video-1.0 gtk+-3.0`)
 
@@ -12,10 +12,10 @@ G9FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-pbuti
 
 G15FLAGS = $(shell echo `pkg-config --cflags --libs gstreamer-1.0 clutter-1.0 clutter-gst-3.0`)
 
-all: basic playback
+all: basic playback ex
 
 basic: $(shell \
-    for i in {1..15}; \
+    for i in {1..14}; \
     do\
 	    if [ -e "basic-tutorial-$$i.c" ]; then\
             echo basic-tutorial-$$i;\
@@ -53,5 +53,6 @@ clean:
 	@for i in {1..15}; do rm -rf basic-tutorial-$$i; done;
 	@for i in {1..7}; do rm -rf playback-tutorial-$$i; done;
 	@rm -rf exercise-2;
+	@rm -rf *.dSYM;
 	@echo done
 
