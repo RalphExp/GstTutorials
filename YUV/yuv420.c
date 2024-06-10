@@ -15,11 +15,16 @@ void usage(char* argv[]) {
     exit(1);
 }
 
-GstFlowReturn new_preroll_cb(GstAppSink* appsink, gpointer user_data) {
+
+void on_eos(GstAppSink* appsink, gpointer user_data) {
+    printf("============ eos ===============\n\n");
+}
+
+GstFlowReturn on_new_preroll(GstAppSink* appsink, gpointer user_data) {
     return GST_FLOW_OK;
 }
 
-GstFlowReturn new_sample_cb(GstAppSink* appsink, gpointer user_data) {
+GstFlowReturn on_new_sample(GstAppSink* appsink, gpointer user_data) {
     printf("on new frame\n");
     // GstAppSinkCallbacks callbacks;
     // callbacks.eos = NULL;
@@ -34,11 +39,10 @@ GstFlowReturn new_sample_cb(GstAppSink* appsink, gpointer user_data) {
 }
 
 void app_sink_set_callback(GstElement* sink, CustomData* data) {
-    GstAppSinkCallbacks callbacks;
-    callbacks.eos = NULL;
-    callbacks.new_event = NULL;
-    callbacks.new_preroll = new_preroll_cb;
-    callbacks.new_sample = new_sample_cb;
+    GstAppSinkCallbacks callbacks = {0};
+    callbacks.eos = on_eos;
+    callbacks.new_preroll = on_new_preroll;
+    callbacks.new_sample = on_new_sample;
     gst_app_sink_set_callbacks(GST_APP_SINK(sink), &callbacks, data, NULL);
 }
 
@@ -73,10 +77,10 @@ int real_main (int argc, char *argv[]) {
     app_sink_set_callback(data.sink, &data);
 
     /* Start playing */
-    gst_element_set_state (data.pipeline, GST_STATE_PLAYING);
+    gst_element_set_state(data.pipeline, GST_STATE_PLAYING);
 
     /* Wait until error or EOS */
-    bus = gst_element_get_bus (data.pipeline);
+    bus = gst_element_get_bus(data.pipeline);
     gboolean terminate = FALSE;
 
     do {
