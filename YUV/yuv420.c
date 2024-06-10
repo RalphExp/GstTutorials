@@ -21,6 +21,15 @@ GstFlowReturn new_preroll_cb(GstAppSink* appsink, gpointer user_data) {
 
 GstFlowReturn new_sample_cb(GstAppSink* appsink, gpointer user_data) {
     printf("on new frame\n");
+    GstAppSinkCallbacks callbacks;
+    callbacks.eos = NULL;
+    callbacks.new_event = NULL;
+    callbacks.new_preroll = NULL;
+    callbacks.new_sample = NULL;
+
+    gst_app_sink_set_callbacks(appsink, &callbacks, NULL, NULL);
+    CustomData* data = (CustomData* )user_data;
+    gst_element_set_state (data->pipeline, GST_STATE_NULL);
     return GST_FLOW_OK;
 }
 
@@ -30,7 +39,6 @@ void app_sink_set_callback(GstElement* sink, CustomData* data) {
     callbacks.new_event = NULL;
     callbacks.new_preroll = new_preroll_cb;
     callbacks.new_sample = new_sample_cb;
-
     gst_app_sink_set_callbacks(GST_APP_SINK(sink), &callbacks, data, NULL);
 }
 
