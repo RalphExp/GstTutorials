@@ -4,7 +4,7 @@ SHELL = /bin/bash
 
 CC = gcc
 
-GSTFLAGS += -g $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-video-1.0 gstreamer-audio-1.0`)
+GSTFLAGS += -g $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-app-1.0 gstreamer-video-1.0 gstreamer-audio-1.0`)
 
 all: yuv420
 
