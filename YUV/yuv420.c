@@ -11,7 +11,6 @@ int real_main (int argc, char *argv[]) {
     GstElement *pipeline;
     GstBus *bus;
     GstMessage *msg;
-    GMainLoop *main_loop;
 
     if (argc == 1) {
         usage(argv);
@@ -47,7 +46,6 @@ int real_main (int argc, char *argv[]) {
     /* Free resources */
     gst_message_unref (msg);
     gst_object_unref (bus);
-
 
     gst_element_set_state (pipeline, GST_STATE_NULL);
     gst_object_unref (pipeline);
