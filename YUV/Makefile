@@ -9,7 +9,7 @@ GSTFLAGS += -g $(shell echo `pkg-config --cflags --libs gstreamer-1.0 gstreamer-
 all: yuv420
 
 yuv420: yuv420.c
-	$(CC) -o$@ $(GSTFLAGS) $<
+	$(CC) -o$@ $< $(GSTFLAGS)
 	
 clean: 
 	@echo cleaning...;
