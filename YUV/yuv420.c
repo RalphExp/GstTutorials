@@ -21,15 +21,15 @@ GstFlowReturn new_preroll_cb(GstAppSink* appsink, gpointer user_data) {
 
 GstFlowReturn new_sample_cb(GstAppSink* appsink, gpointer user_data) {
     printf("on new frame\n");
-    GstAppSinkCallbacks callbacks;
-    callbacks.eos = NULL;
-    callbacks.new_event = NULL;
-    callbacks.new_preroll = NULL;
-    callbacks.new_sample = NULL;
+    // GstAppSinkCallbacks callbacks;
+    // callbacks.eos = NULL;
+    // callbacks.new_event = NULL;
+    // callbacks.new_preroll = NULL;
+    // callbacks.new_sample = NULL;
 
-    gst_app_sink_set_callbacks(appsink, &callbacks, NULL, NULL);
-    CustomData* data = (CustomData* )user_data;
-    gst_element_set_state (data->pipeline, GST_STATE_NULL);
+    // gst_app_sink_set_callbacks(appsink, &callbacks, NULL, NULL);
+    // CustomData* data = (CustomData* )user_data;
+    // gst_element_set_state (data->pipeline, GST_STATE_NULL);
     return GST_FLOW_OK;
 }
 
@@ -52,7 +52,7 @@ int real_main (int argc, char *argv[]) {
     }
 
     /* Initialize GStreamer */
-    gst_init (&argc, &argv);
+    gst_init(&argc, &argv);
 
     char* path = realpath(argv[1], NULL);
     char pipeline[1024] = {0};
@@ -77,24 +77,60 @@ int real_main (int argc, char *argv[]) {
 
     /* Wait until error or EOS */
     bus = gst_element_get_bus (data.pipeline);
-    msg =
-        gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
-        GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+    gboolean terminate = FALSE;
 
-    /* See next tutorial for proper error message handling/parsing */
-    if (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_ERROR) {
-        g_error ("An error occurred! Re-run with the GST_DEBUG=*:WARN environment "
-        "variable set for more details.");
-    }
+    do {
+        msg = gst_bus_pop_filtered (bus, GST_MESSAGE_STATE_CHANGED |
+            GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+
+        /* Parse message */
+        if (msg != NULL) {
+            GError *err;
+            gchar *debug_info;
+
+            switch (GST_MESSAGE_TYPE(msg)) {
+            case GST_MESSAGE_ERROR:
+                gst_message_parse_error(msg, &err, &debug_info);
+                g_printerr ("Error received from element %s: %s\n",
+                    GST_OBJECT_NAME (msg->src), err->message);
+                g_printerr ("Debugging information: %s\n",
+                    debug_info ? debug_info : "none");
+                g_clear_error (&err);
+                g_free (debug_info);
+                terminate = TRUE;
+                break;
+            case GST_MESSAGE_EOS:
+                g_print("End-Of-Stream reached.\n");
+                terminate = TRUE;
+                break;
+            case GST_MESSAGE_STATE_CHANGED:
+                /* We are only interested in state-changed messages from the pipeline */
+                if (GST_MESSAGE_SRC (msg) == GST_OBJECT (data.pipeline)) {
+                    GstState old_state;
+                    GstState new_state;
+                    GstState pending_state;
+                    gst_message_parse_state_changed (msg, &old_state, &new_state,
+                        &pending_state);
+                    g_print ("Pipeline state changed from %s to %s:\n",
+                        gst_element_state_get_name (old_state),
+                        gst_element_state_get_name (new_state));
+                }
+                break;
+            default:
+                /* We should not reach here */
+                g_printerr ("Unexpected message received.\n");
+                break;
+            }
+            gst_message_unref(msg);
+        }
+    } while (!terminate);
 
     /* Free resources */
+    free(path);
     gst_message_unref (msg);
     gst_object_unref (bus);
-
     gst_element_set_state (data.pipeline, GST_STATE_NULL);
     gst_object_unref (data.pipeline);
-
-    free(path);
     return 0;
 }
 
