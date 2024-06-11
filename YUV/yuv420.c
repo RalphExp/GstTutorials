@@ -6,7 +6,6 @@
 
 typedef struct _CustomData {
     GstElement *pipeline;
-    GstElement *source;
     GstElement *sink;
     GMainLoop *main_loop;         /* GLib's Main Loop */
 } CustomData;
@@ -72,8 +71,6 @@ void app_sink_set_callback(GstElement* sink, CustomData* data) {
 
 int real_main (int argc, char *argv[]) {
     CustomData data;
-    GstMessage* msg;
-    GstBus* bus;
 
     if (argc == 1) {
         usage(argv);
@@ -98,7 +95,6 @@ int real_main (int argc, char *argv[]) {
         return -1;
     }
     
-    gst_element_set_state(data.pipeline, GST_STATE_PLAYING);
     // app_sink_set_callback(data.sink, &data);
 
     /* Start playing */
