@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
+#include <gst/video/video-info.h>
 
 typedef struct _CustomData {
     GstElement *pipeline;
@@ -17,7 +18,38 @@ void usage(char* argv[]) {
 
 
 void on_eos(GstAppSink* appsink, gpointer user_data) {
-    printf("============ eos ===============\n\n");
+
+}
+
+void handle_yuv_sample(GstSample* sample) {
+    GstBuffer* buffer = gst_sample_get_buffer(sample);
+    if (!buffer) {
+        printf("not buffer in sample\n");
+        return;
+    }
+
+    GstCaps* caps = gst_sample_get_caps(sample);
+    GstVideoInfo video_info;
+    gst_video_info_init(&video_info);
+    
+    if (caps) {
+        gst_video_info_from_caps(&video_info, caps);
+        gst_caps_unref(caps);
+    }
+
+    GstMapInfo map_info;
+    if (gst_buffer_map(buffer, &map_info, GST_MAP_READ)) {
+        guint8* data = map_info.data;
+        printf("data size: %ld, width: %u, height: %u\n", 
+            map_info.size, video_info.width, video_info.height);
+
+        for (int i = 0; i < map_info.size; ++i) {
+            if ((i % video_info.width) == 0)  {
+                printf("\n");
+            }
+            printf("%4d", data[i]);
+        }
+    }
 }
 
 GstFlowReturn on_new_preroll(GstAppSink* appsink, gpointer user_data) {
@@ -26,13 +58,13 @@ GstFlowReturn on_new_preroll(GstAppSink* appsink, gpointer user_data) {
 
 GstFlowReturn on_new_sample(GstAppSink* appsink, gpointer user_data) {
     printf("on new frame\n");
-    // GstAppSinkCallbacks callbacks;
-    // callbacks.eos = NULL;
-    // callbacks.new_event = NULL;
-    // callbacks.new_preroll = NULL;
-    // callbacks.new_sample = NULL;
+    GstSample* sample = gst_app_sink_pull_sample(appsink);
+    handle_yuv_sample(sample);
+    gst_sample_unref(sample);
 
-    // gst_app_sink_set_callbacks(appsink, &callbacks, NULL, NULL);
+
+    GstAppSinkCallbacks callbacks = {0};
+    gst_app_sink_set_callbacks(appsink, &callbacks, NULL, NULL);
     // CustomData* data = (CustomData* )user_data;
     // gst_element_set_state (data->pipeline, GST_STATE_NULL);
     return GST_FLOW_OK;
@@ -115,9 +147,9 @@ int real_main (int argc, char *argv[]) {
                     GstState pending_state;
                     gst_message_parse_state_changed (msg, &old_state, &new_state,
                         &pending_state);
-                    g_print ("Pipeline state changed from %s to %s:\n",
-                        gst_element_state_get_name (old_state),
-                        gst_element_state_get_name (new_state));
+                    // g_print ("Pipeline state changed from %s to %s:\n",
+                    //    gst_element_state_get_name (old_state),
+                    //    gst_element_state_get_name (new_state));
                 }
                 break;
             default:
