@@ -106,7 +106,8 @@ int real_main (int argc, char *argv[]) {
     }
 
     // gst_element_set_state(data.pipeline, GST_STATE_NULL);
-    gst_object_unref (data.pipeline);
+    gst_object_unref(data.sink);
+    gst_object_unref(data.pipeline);
     return 0;
 }
 
