@@ -1,0 +1,1 @@
+gst-launch-1.0 -e v4l2src device=/dev/video3 ! gamma gamma=2.0 ! video/x-raw, format=UYVY, width=1280,height=720,framerate=80/1 ! videorate ! video/x-raw,framerate=10/1 ! videoconvert ! videobalance contrast=1.5 brightness=0 ! x264enc name=vs0_enc speed-preset=fast pass=qual tune=zerolatency qp-max=40 qp-min=10 !  rtph264pay ! udpsink host=192.168.15.201 port=1234
